@@ -3,7 +3,7 @@
 
 Name:		rapidjson
 Version:	1.1.0
-Release:	%mkrel 2
+Release:	3
 Summary:	A fast JSON parser/generator for C++
 Group:		Development/C++
 License:	BSD
@@ -34,6 +34,10 @@ RapidJSON is a JSON parser and generator for C++. It was inspired by RapidXml.
 
 %prep
 %autosetup -p1
+
+# Remove -march=native and -Werror from compile commands
+find . -type f -name CMakeLists.txt -print0 | \
+  xargs -0r sed -i -e "s/-march=native/ /g" -e "s/-Werror//g"
 
 %build
 %cmake
