@@ -5,7 +5,7 @@
 
 Name:		rapidjson
 Version:	1.1.0
-Release:	5
+Release:	6
 Summary:	A fast JSON parser/generator for C++
 Group:		Development/C++
 License:	BSD
