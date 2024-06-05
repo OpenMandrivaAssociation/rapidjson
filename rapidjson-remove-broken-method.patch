@@ -1,0 +1,12 @@
+diff -up rapidjson-1.1.0/include/rapidjson/document.h.omv~ rapidjson-1.1.0/include/rapidjson/document.h
+--- rapidjson-1.1.0/include/rapidjson/document.h.omv~	2024-06-05 15:15:16.757890995 +0200
++++ rapidjson-1.1.0/include/rapidjson/document.h	2024-06-05 15:17:30.723313224 +0200
+@@ -316,8 +316,6 @@ struct GenericStringRef {
+ 
+     GenericStringRef(const GenericStringRef& rhs) : s(rhs.s), length(rhs.length) {}
+ 
+-    GenericStringRef& operator=(const GenericStringRef& rhs) { s = rhs.s; length = rhs.length; }
+-
+     //! implicit conversion to plain CharType pointer
+     operator const Ch *() const { return s; }
+ 

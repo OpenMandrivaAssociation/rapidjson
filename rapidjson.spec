@@ -5,19 +5,32 @@
 
 Name:		rapidjson
 Version:	1.1.0
-Release:	6
+Release:	7
 Summary:	A fast JSON parser/generator for C++
 Group:		Development/C++
 License:	BSD
 URL:		https://rapidjson.org/
 Source0:	https://github.com/Tencent/rapidjson/archive/v%{version}/%{name}-%{version}.tar.gz
 #Patch0:	remove-Werror-cmakelist.patch
+# Remove a method from rapidjson/document.h that can't possibly work
+# (writes to a const member), and that breaks builds if the file is
+# merely included
+Patch0:		rapidjson-remove-broken-method.patch
 
-BuildRequires:	cmake
-BuildRequires:	ninja
 %if %{with doc}
 BuildRequires:	doxygen
 %endif
+
+BuildSystem:	cmake
+BuildOption:	-Wno-dev
+BuildOption:	-DRAPIDJSON_BUILD_DOC:BOOL=%{?with_doc:ON}%{?!with_doc:OFF}
+BuildOption:	-DRAPIDJSON_BUILD_EXAMPLES:BOOL=ON
+BuildOption:	-DRAPIDJSON_BUILD_TESTS:BOOL=ON
+BuildOption:	-DRAPIDJSON_BUILD_THIRDPARTY_GTEST:BOOL=OFF
+BuildOption:	-DRAPIDJSON_BUILD_CXX11:BOOL=ON
+BuildOption:	-DRAPIDJSON_BUILD_ASAN:BOOL=OFF
+BuildOption:	-DRAPIDJSON_BUILD_UBSAN:BOOL=OFF
+BuildOption:	-DRAPIDJSON_HAS_STDSTRING:BOOL=OFF
 
 %description
 RapidJSON is a JSON parser and generator for C++. It was inspired by RapidXml.
@@ -45,27 +58,7 @@ RapidJSON is a JSON parser and generator for C++. It was inspired by RapidXml.
 
 #---------------------------------------------------------------------------
 
-%prep
-%autosetup -p1
-
+%prep -a
 # Remove -march=native and -Werror from compile commands
 find . -type f -name CMakeLists.txt -print0 | \
   xargs -0r sed -i -e "s/-march=native/ /g" -e "s/-Werror//g"
-
-%build
-%cmake \
-	-Wno-dev \
-	-DRAPIDJSON_BUILD_DOC:BOOL=%{?with_doc:ON}%{?!with_doc:OFF} \
-	-DRAPIDJSON_BUILD_EXAMPLES:BOOL=ON \
-	-DRAPIDJSON_BUILD_TESTS:BOOL=ON \
-	-DRAPIDJSON_BUILD_THIRDPARTY_GTEST:BOOL=OFF \
-	-DRAPIDJSON_BUILD_CXX11:BOOL=ON \
-	-DRAPIDJSON_BUILD_ASAN:BOOL=OFF \
-	-DRAPIDJSON_BUILD_UBSAN:BOOL=OFF \
-	-DRAPIDJSON_HAS_STDSTRING:BOOL=OFF \
-	-G Ninja
-%ninja_build
-
-%install
-%ninja_install -C build
-
